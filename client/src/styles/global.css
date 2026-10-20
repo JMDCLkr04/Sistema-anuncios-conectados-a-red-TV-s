@@ -1,0 +1,353 @@
+@import 'tailwindcss';
+
+/* =====================================================================
+   Identidad visual — Tailwind CSS v4 (configuración dentro del propio CSS)
+   Paleta acordada:
+     · Verde (brand)  → color principal (encabezados, botones, navegación)
+     · Blanco         → color complementario (fondo y contraste)
+     · Rojo (urgent)  → color resaltante exclusivo de anuncios críticos
+   Relación de contraste verificada (WCAG 2.2, criterio 1.4.3):
+     brand-700 (#15803d) sobre blanco ......... 5.02:1  ✅ AA texto normal
+     urgent-700 (#b91c1c) sobre blanco ........ 6.54:1  ✅ AA/AAA
+     blanco sobre brand-700 ................... 5.02:1  ✅ AA
+     blanco sobre urgent-700 .................. 6.54:1  ✅ AA
+     slate-900 (#0f172a) sobre blanco ......... 17.8:1  ✅ AAA
+   ===================================================================== */
+@theme {
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
+  --color-brand-300: #86efac;
+  --color-brand-400: #4ade80;
+  --color-brand-500: #22c55e;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+  --color-brand-800: #166534;
+  --color-brand-900: #14532d;
+
+  --color-urgent-50: #fef2f2;
+  --color-urgent-100: #fee2e2;
+  --color-urgent-200: #fecaca;
+  --color-urgent-500: #ef4444;
+  --color-urgent-600: #dc2626;
+  --color-urgent-700: #b91c1c;
+  --color-urgent-800: #991b1b;
+  --color-urgent-900: #7f1d1d;
+
+  --font-sans:
+    'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* =====================================================================
+   Estilos base y accesibilidad global (WCAG 2.2)
+   ===================================================================== */
+@layer base {
+  html {
+    /* Permite textos al 200 % sin pérdida de contenido (1.4.4 / 1.4.10). */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  /* Indicador de foco visible y consistente (2.4.7, 2.4.11, 3.3.2). */
+  :focus-visible {
+    outline: 3px solid var(--color-brand-700);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Sobre superficies oscuras el foco usa un tono claro para mantener
+     contraste ≥ 3:1 (1.4.11 contraste de elementos no textuales). */
+  .on-dark :focus-visible {
+    outline-color: var(--color-brand-300);
+  }
+
+  /* Respeta la preferencia de movimiento reducido (2.3.3 animación por
+     interacción). Las rotaciones y transiciones se desactivan. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* =====================================================================
+   Componentes semánticos
+   Las clases de urgencia se declaran de forma estática (no dinámica) para
+   que Tailwind no dependa del escaneo de archivos del servidor.
+   ===================================================================== */
+@layer components {
+  /* ---- Salto al contenido (2.4.1, 2.4.3) ---- */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--color-brand-800);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0 0 0.5rem 0;
+  }
+  .skip-link:focus {
+    left: 0;
+  }
+
+  /* ---- Distintivo de urgencia ---- */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    border: 2px solid transparent;
+  }
+
+  /* Crítico: color resaltante rojo + texto blanco (no depende sólo del color:
+     el texto "Crítico" y el icono aportan el significado — 1.4.1). */
+  .badge--critical {
+    background-color: var(--color-urgent-700);
+    color: #ffffff;
+    border-color: var(--color-urgent-700);
+  }
+  .badge--high {
+    background-color: var(--color-brand-700);
+    color: #ffffff;
+    border-color: var(--color-brand-700);
+  }
+  .badge--normal {
+    background-color: var(--color-brand-100);
+    color: var(--color-brand-900);
+    border-color: var(--color-brand-300);
+  }
+  .badge--low {
+    background-color: #f1f5f9;
+    color: #334155;
+    border-color: #cbd5e1;
+  }
+
+  /* ---- Tarjeta de anuncio ---- */
+  .announcement {
+    position: relative;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
+  }
+  .announcement::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0.5rem;
+    border-radius: 0.75rem 0 0 0.75rem;
+    background-color: var(--color-brand-600);
+  }
+  .announcement--critical {
+    border-color: var(--color-urgent-200);
+    background-color: var(--color-urgent-50);
+  }
+  .announcement--critical::before {
+    background-color: var(--color-urgent-700);
+    width: 0.75rem;
+  }
+  .announcement--high::before {
+    background-color: var(--color-brand-700);
+  }
+  .announcement--low::before {
+    background-color: #94a3b8;
+  }
+
+  /* ---- Pantalla de emisión (superficie oscura de alto contraste) ---- */
+  .display-surface {
+    background-color: #05231a;
+    color: #ffffff;
+  }
+  .display-announcement {
+    border-radius: 1rem;
+    border: 3px solid var(--color-brand-400);
+    background-color: rgb(255 255 255 / 0.06);
+    padding: 2rem;
+  }
+  .display-announcement--critical {
+    border-color: var(--color-urgent-500);
+    background-color: rgb(185 28 28 / 0.28);
+  }
+
+  /* ---- Barra de progreso de la rotación (sin depender del color) ---- */
+  .rotation-meter {
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: rgb(255 255 255 / 0.25);
+    overflow: hidden;
+  }
+  .rotation-meter__value {
+    height: 100%;
+    background-color: var(--color-brand-400);
+  }
+  .rotation-meter__value--critical {
+    background-color: var(--color-urgent-500);
+  }
+
+  /* ---- Enlace de navegación activo (2.4.8 ubicación) ---- */
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: var(--color-brand-900);
+  }
+  .nav-link:hover {
+    background-color: var(--color-brand-100);
+  }
+  .nav-link[aria-current='page'] {
+    background-color: var(--color-brand-700);
+    color: #ffffff;
+  }
+
+  /* ---- Botones (contraste verificado en el encabezado del archivo) ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem; /* objetivo táctil ≥ 44 px (2.5.8) */
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 2px solid transparent;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    line-height: 1.2;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 120ms ease-in-out, color 120ms ease-in-out;
+  }
+  .btn:disabled,
+  .btn[aria-disabled='true'] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .btn--primary {
+    background-color: var(--color-brand-700);
+    color: #ffffff;
+  }
+  .btn--primary:hover:not(:disabled) {
+    background-color: var(--color-brand-800);
+  }
+  .btn--secondary {
+    background-color: #ffffff;
+    color: var(--color-brand-900);
+    border-color: var(--color-brand-600);
+  }
+  .btn--secondary:hover:not(:disabled) {
+    background-color: var(--color-brand-100);
+  }
+  .btn--danger {
+    background-color: var(--color-urgent-700);
+    color: #ffffff;
+  }
+  .btn--danger:hover:not(:disabled) {
+    background-color: var(--color-urgent-800);
+  }
+  .btn--ghost {
+    background-color: transparent;
+    color: var(--color-brand-900);
+  }
+  .btn--ghost:hover:not(:disabled) {
+    background-color: var(--color-brand-100);
+  }
+
+  /* ---- Campos de formulario (etiqueta siempre visible, 3.3.2) ---- */
+  .input,
+  .select,
+  .textarea {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 2px solid #cbd5e1;
+    background-color: #ffffff;
+    color: var(--color-slate-900, #0f172a);
+    font-size: 1rem;
+  }
+  .input:hover,
+  .select:hover,
+  .textarea:hover {
+    border-color: #94a3b8;
+  }
+  .input:focus-visible,
+  .select:focus-visible,
+  .textarea:focus-visible {
+    border-color: var(--color-brand-700);
+  }
+  .input[aria-invalid='true'],
+  .select[aria-invalid='true'],
+  .textarea[aria-invalid='true'] {
+    border-color: var(--color-urgent-700);
+    background-color: var(--color-urgent-50);
+  }
+  .textarea {
+    min-height: 7rem;
+    resize: vertical;
+  }
+
+  /* ---- Tabla de datos con encabezados persistentes ---- */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+  .data-table caption {
+    text-align: left;
+    padding-bottom: 0.5rem;
+    color: #475569;
+  }
+  .data-table th,
+  .data-table td {
+    text-align: left;
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+  .data-table th {
+    background-color: var(--color-brand-50);
+    color: var(--color-brand-900);
+    font-weight: 700;
+  }
+}
+
+/* Animación opcional del aviso crítico (se desactiva con
+   `prefers-reduced-motion`, ver bloque base). */
+@keyframes urgent-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(185 28 28 / 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 0.75rem rgb(185 28 28 / 0);
+  }
+}
+
+.urgent-pulse {
+  animation: urgent-pulse 2s ease-out infinite;
+}
+
+/* Impresión: útil para respaldos en papel de la cartelera. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
