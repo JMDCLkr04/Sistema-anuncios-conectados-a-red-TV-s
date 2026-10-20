@@ -1,0 +1,25 @@
+name: anuncios-mvp
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: anuncios-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-anuncios}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-anuncios_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-anuncios}
+    ports:
+      # Expuesto solo en loopback: la base de datos no debe salir de la LAN.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  pgdata:

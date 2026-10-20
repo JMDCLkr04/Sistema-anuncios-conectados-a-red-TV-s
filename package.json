@@ -1,0 +1,26 @@
+{
+  "name": "proyecto-titulacion-anuncios",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MVP de emisi\u00f3n de anuncios hacia pantallas en red local (WiFi). Monolito modular con MVC, React + TypeScript, Express y PostgreSQL.",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "node api.js && concurrently -n server,client -c green,white \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "node api.js && npm run build -w client && npm run build -w server",
+    "start": "node api.js && npm run start -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d",
+    "seed": "npm run seed -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20.11"
+  }
+}
